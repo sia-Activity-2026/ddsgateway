@@ -15,101 +15,22 @@ class UserController extends Controller
     }
 
 
-    public function getUsers()
-    {
-        $users = User::all();
-        return response()->json($users, 200);
-    }
+    public function getUsers() {}
 
-    public function add(Request $request)
-    {
-        $rule = [
-            'username' => 'required | string | unique:users,username|max:20',
-            'password' => 'required | string | min:6 | max:20',
-        ];
-
-        $this->validate($request, $rule);
-
-        $user = User::create($request->all());
-        return response()->json($user, 201);
-    }
+    public function add(Request $request) {}
 
     // or like this 
-    public function add_2ndVersion(Request $request)
-    {
-        $rule = [
-            'username' => 'required | string | unique:users,username|max:20',
-            'password' => 'required | string | min:6 | max:20',
-        ];
-
-        $this->validate($request, $rule);
-
-        $user = User::create($request->all());
-
-        return response()->json([
-            'message' => 'User created successfully',
-            'user' => $user
-        ], 201);
-    }
+    public function add_2ndVersion(Request $request) {}
 
 
-    public function show($id)
-    {
-        $user = User::where('id', $id)->first();
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'User not found'
-            ], 404);
-        }
-
-        return response()->json($user, 200);
-    }
+    public function show($id) {}
 
 
-    public function delete($id)
-    {
-        $user = User::where('id', $id)->first();
-
-        if ($user) {
-            $user->delete();
-            return response()->json([
-                'message' => 'User deleted successfully'
-            ], 200);
-        }
-
-        return response()->json([
-            'message' => 'User not found'
-        ], 404);
-    }
+    public function delete($id) {}
 
 
-    public function update($id, Request $request)
-    {
-        $user = User::where('id', $id)->first();
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'User not found'
-            ], 404);
-        }
-
-        $rule = [
-            'username' => 'string | unique:users,username,' . $id . '|max:20',
-            'password' => 'string | min:6 | max:20',
-        ];
-
-        $this->validate($request, $rule);
-
-        $user->update($request->all());
-        return response()->json($user, 200);
-    }
+    public function update($id, Request $request) {}
     
-
-
-
-
-
 
 
 
