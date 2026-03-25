@@ -12,10 +12,12 @@ class User1Service
      * @var string
      */
     public $baseUri;
+    public $secret;
 
     public function __construct()
     {
         $this->baseUri = config('services.users1.base_uri');
+        $this->secret = config('services.users1.secret');
     }
 
     /**
@@ -42,7 +44,7 @@ class User1Service
     /**
      * Update an instance of user1 using the User1 service
      * @return string
-    */
+     */
     public function editUser1($data, $id)
     {
         return $this->performRequest(
