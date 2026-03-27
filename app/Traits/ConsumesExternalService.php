@@ -12,16 +12,18 @@ trait ConsumesExternalService
      * @return string
      */
     // note form params and headers are optional public
-    function performRequest(
-        $method,
-        $requestUrl,
-        $form_params = [],
-        $headers = []
-    ) {
+
+
+    function performRequest($method, $requestUrl, $form_params = [], $headers = [])
+    {
         // create a new client request
         $client = new Client([
             'base_uri' => $this->baseUri,
         ]);
+
+        if (isset($this->secret)) {
+            $headers['Authorization'] = $this->secret;
+        }
 
         // perform the request (method, url, formparameters, headers) 
         $response = $client->request(
@@ -32,9 +34,8 @@ trait ConsumesExternalService
                 'headers' => $headers,
                 // Do not throw exceptions on 4xx/5xx; let callers
                 // handle the actual status and body from the service.
-                'http_errors' => false,
-            ]
-        );
+                // 'http_errors' => false,
+]);
         // return the response body contents
         return $response->getBody()->getContents();
     }
