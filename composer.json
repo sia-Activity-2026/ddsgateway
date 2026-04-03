@@ -5,7 +5,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^8.0",
+        "php": "^8.2",
         "dusterio/lumen-passport": "^0.3.8",
         "flipbox/lumen-generator": "^9.3",
         "guzzlehttp/guzzle": "^7.10",
