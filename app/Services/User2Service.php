@@ -17,8 +17,8 @@ class User2Service
 
     public function __construct()
     {
-        $this->baseUri = config('services.ddsbe2.base_uri');
-        $this->secret = config('services.ddsbe2.secret');
+        $this->baseUri = config('services.users2.base_uri');
+        $this->secret = config('services.users2.secret');
     }
 
 
