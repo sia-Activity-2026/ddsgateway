@@ -36,3 +36,11 @@ $router->group(['middleware' => 'client.credentials'], function () use ($router)
     $router->put('/users2/{id}', 'User2Controller@update');
     $router->delete('/users2/{id}', 'User2Controller@delete');
 });
+
+$router->group(['middleware' => 'auth:api'], function () use ($router) {
+    $router->get('products', 'ProductController@index');
+    $router->get('products/{id}', 'ProductController@show');
+    $router->post('products', 'ProductController@store');
+    $router->put('products/{id}', 'ProductController@update');
+    $router->delete('products/{id}', 'ProductController@destroy');
+});
