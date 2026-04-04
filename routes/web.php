@@ -36,10 +36,10 @@ $router->group(['middleware' => 'client.credentials'], function () use ($router)
     $router->put('/users2/{id}', 'User2Controller@update');
     $router->delete('/users2/{id}', 'User2Controller@delete');
 
-    // Api gateway routes for products (forwarded to site2 backend)
-    $router->get('/products', 'ProxyController@getProducts');
-    $router->post('/products', 'ProxyController@storeProduct');
-    $router->get('/products/{id}', 'ProxyController@showProduct');
-    $router->put('/products/{id}', 'ProxyController@updateProduct');
-    $router->delete('/products/{id}', 'ProxyController@destroyProduct');
+    // Api gateway routes for products (handled by gateway local ProductController)
+    $router->get('/products', 'ProductController@index');
+    $router->post('/products', 'ProductController@store');
+    $router->get('/products/{id}', 'ProductController@show');
+    $router->put('/products/{id}', 'ProductController@update');
+    $router->delete('/products/{id}', 'ProductController@destroy');
 });
