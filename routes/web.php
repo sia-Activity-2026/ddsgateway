@@ -13,12 +13,12 @@
 |
 */
 
+$router->post('/oauth/token', 'AccessTokenController@issueToken');
+
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-
-// with authentication using the client credentials grant
 $router->group(['middleware' => 'client.credentials'], function () use ($router) {
 
     // Api gateway routes for site1 users
@@ -43,4 +43,10 @@ $router->group(['middleware' => 'auth:api'], function () use ($router) {
     $router->post('products', 'ProductController@store');
     $router->put('products/{id}', 'ProductController@update');
     $router->delete('products/{id}', 'ProductController@destroy');
+    // Site2 Product routes
+    $router->get('site2/products', 'ProxyController@getProducts');
+    $router->post('site2/products', 'ProxyController@storeProduct');
+    $router->get('site2/products/{id}', 'ProxyController@showProduct');
+    $router->put('site2/products/{id}', 'ProxyController@updateProduct');
+    $router->delete('site2/products/{id}', 'ProxyController@destroyProduct');
 });

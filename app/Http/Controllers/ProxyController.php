@@ -59,4 +59,4 @@ class ProxyController extends Controller
 
         return response()->json($response->json(), $response->status());
     }
-}
+} 
