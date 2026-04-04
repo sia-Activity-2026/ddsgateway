@@ -42,4 +42,5 @@ $router->group(['middleware' => 'client.credentials'], function () use ($router)
     $router->get('/products/{id}', 'ProductController@show');
     $router->put('/products/{id}', 'ProductController@update');
     $router->delete('/products/{id}', 'ProductController@destroy');
+    $router->get('/products/health', 'ProductController@health');
 });
