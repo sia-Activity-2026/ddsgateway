@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Database\QueryException;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -20,11 +21,24 @@ class ProductController extends Controller
         ], 500);
     }
 
-    protected function safeTableExists(): bool
+    protected function ensureProductsTable(): bool
     {
         try {
-            return Schema::hasTable('products');
-        } catch (QueryException $exception) {
+            if (Schema::hasTable('products')) {
+                return true;
+            }
+
+            Schema::create('products', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->text('description')->nullable();
+                $table->decimal('price', 10, 2)->default(0);
+                $table->integer('stock')->default(0);
+                $table->timestamps();
+            });
+
+            return true;
+        } catch (Throwable $exception) {
             return false;
         }
     }
@@ -32,11 +46,11 @@ class ProductController extends Controller
     public function index()
     {
         try {
-            if (! $this->safeTableExists()) {
+            if (! $this->ensureProductsTable()) {
                 return response()->json([
-                    'data' => [],
-                    'message' => 'products table not found. Run gateway migrations.',
-                ], 200);
+                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
+                    'code' => 500,
+                ], 500);
             }
 
             return response()->json(Product::all());
@@ -48,9 +62,9 @@ class ProductController extends Controller
     public function show($id)
     {
         try {
-            if (! $this->safeTableExists()) {
+            if (! $this->ensureProductsTable()) {
                 return response()->json([
-                    'error' => 'products table not found. Run gateway migrations.',
+                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
                     'code' => 500,
                 ], 500);
             }
@@ -64,9 +78,9 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         try {
-            if (! $this->safeTableExists()) {
+            if (! $this->ensureProductsTable()) {
                 return response()->json([
-                    'error' => 'products table not found. Run gateway migrations.',
+                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
                     'code' => 500,
                 ], 500);
             }
@@ -87,9 +101,9 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            if (! $this->safeTableExists()) {
+            if (! $this->ensureProductsTable()) {
                 return response()->json([
-                    'error' => 'products table not found. Run gateway migrations.',
+                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
                     'code' => 500,
                 ], 500);
             }
@@ -112,9 +126,9 @@ class ProductController extends Controller
     public function destroy($id)
     {
         try {
-            if (! $this->safeTableExists()) {
+            if (! $this->ensureProductsTable()) {
                 return response()->json([
-                    'error' => 'products table not found. Run gateway migrations.',
+                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
                     'code' => 500,
                 ], 500);
             }
@@ -131,12 +145,20 @@ class ProductController extends Controller
         try {
             DB::connection()->getPdo();
 
-            if (! $this->safeTableExists()) {
+            if (! Schema::hasTable('products')) {
+                if ($this->ensureProductsTable()) {
+                    return response()->json([
+                        'status' => 'ok',
+                        'database' => DB::getDatabaseName(),
+                        'table' => 'products created',
+                    ], 200);
+                }
+
                 return response()->json([
-                    'status' => 'ok',
+                    'status' => 'error',
                     'database' => DB::getDatabaseName(),
-                    'table' => 'products not found',
-                ], 200);
+                    'table' => 'products not found and could not be created',
+                ], 500);
             }
 
             return response()->json([
