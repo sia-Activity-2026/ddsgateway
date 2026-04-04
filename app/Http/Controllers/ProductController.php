@@ -8,6 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Validator;
 use Throwable;
 
 class ProductController extends Controller
@@ -85,14 +86,18 @@ class ProductController extends Controller
                 ], 500);
             }
 
-            $data = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 'price' => 'required|numeric',
                 'stock' => 'required|integer',
             ]);
 
-            return response()->json(Product::create($data), 201);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            return response()->json(Product::create($validator->validated()), 201);
         } catch (Throwable $exception) {
             return $this->dbErrorResponse($exception);
         }
@@ -109,14 +114,18 @@ class ProductController extends Controller
             }
 
             $product = Product::findOrFail($id);
-            $data = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'name' => 'sometimes|string|max:255',
                 'description' => 'nullable|string',
                 'price' => 'sometimes|numeric',
                 'stock' => 'sometimes|integer',
             ]);
 
-            $product->update($data);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            $product->update($validator->validated());
             return response()->json($product);
         } catch (Throwable $exception) {
             return $this->dbErrorResponse($exception);
