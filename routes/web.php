@@ -39,8 +39,8 @@ $router->group(['middleware' => 'client.credentials'], function () use ($router)
     // Api gateway routes for products (handled by gateway local ProductController)
     $router->get('/products', 'ProductController@index');
     $router->post('/products', 'ProductController@store');
+    $router->get('/products/health', 'ProductController@health');
     $router->get('/products/{id}', 'ProductController@show');
     $router->put('/products/{id}', 'ProductController@update');
     $router->delete('/products/{id}', 'ProductController@destroy');
-    $router->get('/products/health', 'ProductController@health');
 });
