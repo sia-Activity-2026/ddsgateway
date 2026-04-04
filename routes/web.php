@@ -35,18 +35,11 @@ $router->group(['middleware' => 'client.credentials'], function () use ($router)
     $router->get('/users2/{id}', 'User2Controller@show');
     $router->put('/users2/{id}', 'User2Controller@update');
     $router->delete('/users2/{id}', 'User2Controller@delete');
-});
 
-$router->group(['middleware' => 'auth:api'], function () use ($router) {
-    $router->get('products', 'ProductController@index');
-    $router->get('products/{id}', 'ProductController@show');
-    $router->post('products', 'ProductController@store');
-    $router->put('products/{id}', 'ProductController@update');
-    $router->delete('products/{id}', 'ProductController@destroy');
-    // Site2 Product routes
-    $router->get('site2/products', 'ProxyController@getProducts');
-    $router->post('site2/products', 'ProxyController@storeProduct');
-    $router->get('site2/products/{id}', 'ProxyController@showProduct');
-    $router->put('site2/products/{id}', 'ProxyController@updateProduct');
-    $router->delete('site2/products/{id}', 'ProxyController@destroyProduct');
+    // Api gateway routes for products
+    $router->get('/products', 'ProductController@index');
+    $router->post('/products', 'ProductController@store');
+    $router->get('/products/{id}', 'ProductController@show');
+    $router->put('/products/{id}', 'ProductController@update');
+    $router->delete('/products/{id}', 'ProductController@destroy');
 });
