@@ -19,7 +19,7 @@ date_default_timezone_set(env('APP_TIMEZONE', 'UTC'));
 |
 */
 
-$app = new Laravel\Lumen\Application(
+$app = new App\Support\Application(
     dirname(__DIR__)
 );
 
@@ -105,6 +105,8 @@ $app->routeMiddleware([
 
 $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
+$app->register(Illuminate\Translation\TranslationServiceProvider::class);
+$app->register(Illuminate\Validation\ValidationServiceProvider::class);
 
 Laravel\Passport\Passport::ignoreRoutes();
 $app->register(Laravel\Passport\PassportServiceProvider::class);
