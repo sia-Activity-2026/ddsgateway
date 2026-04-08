@@ -39,12 +39,12 @@ class User2Service
 
     public function createUser2($data)
     {
-        return $this->performRequest('POST', '/users', $data);
+        return $this->performRequest('POST', '/users', $data, ['Content-Type' => 'application/json']);
     }
 
 
     /**
-     * Update an instance of user1 using the User1 service
+     * Update an instance of user2 using the User2 service
      * @return string
      */
     public function editUser2($data, $id)
@@ -52,7 +52,8 @@ class User2Service
         return $this->performRequest(
             'PUT',
             "/users/{$id}",
-            $data
+            $data,
+            ['Content-Type' => 'application/json']
         );
     }
 

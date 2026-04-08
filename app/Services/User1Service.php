@@ -37,7 +37,7 @@ class User1Service
 
     public function createUser1($data)
     {
-        return $this->performRequest('POST', '/users', $data);
+        return $this->performRequest('POST', '/users', $data, ['Content-Type' => 'application/json']);
     }
 
 
@@ -50,7 +50,8 @@ class User1Service
         return $this->performRequest(
             'PUT',
             "/users/{$id}",
-            $data
+            $data,
+            ['Content-Type' => 'application/json']
         );
     }
 

@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use Illuminate\Database\QueryException;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -15,45 +13,19 @@ class ProductController extends Controller
     protected function dbErrorResponse(Throwable $exception)
     {
         return response()->json([
-            'error' => 'Database connection or table issue. Please run gateway migrations.',
+            'error' => 'Database error. Ensure migrations have run.',
             'details' => $exception->getMessage(),
             'code' => 500,
         ], 500);
     }
 
-    protected function ensureProductsTable(): bool
+    public function index(Request $request)
     {
         try {
-            if (Schema::hasTable('products')) {
-                return true;
-            }
-
-            Schema::create('products', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->text('description')->nullable();
-                $table->decimal('price', 10, 2)->default(0);
-                $table->integer('stock')->default(0);
-                $table->timestamps();
-            });
-
-            return true;
-        } catch (Throwable $exception) {
-            return false;
-        }
-    }
-
-    public function index()
-    {
-        try {
-            if (! $this->ensureProductsTable()) {
-                return response()->json([
-                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
-                    'code' => 500,
-                ], 500);
-            }
-
-            return response()->json(Product::all());
+            // Add pagination to improve performance and reduce payload
+            $perPage = $request->get('per_page', 15);
+            $products = Product::paginate($perPage);
+            return response()->json($products);
         } catch (Throwable $exception) {
             return $this->dbErrorResponse($exception);
         }
@@ -62,13 +34,6 @@ class ProductController extends Controller
     public function show($id)
     {
         try {
-            if (! $this->ensureProductsTable()) {
-                return response()->json([
-                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
-                    'code' => 500,
-                ], 500);
-            }
-
             return response()->json(Product::findOrFail($id));
         } catch (Throwable $exception) {
             return $this->dbErrorResponse($exception);
@@ -118,13 +83,6 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         try {
-            if (! $this->ensureProductsTable()) {
-                return response()->json([
-                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
-                    'code' => 500,
-                ], 500);
-            }
-
             $validation = $this->validateProductRequest($request, false);
             if (! empty($validation['errors'])) {
                 return response()->json(['errors' => $validation['errors']], 422);
@@ -139,13 +97,6 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            if (! $this->ensureProductsTable()) {
-                return response()->json([
-                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
-                    'code' => 500,
-                ], 500);
-            }
-
             $product = Product::findOrFail($id);
             $validation = $this->validateProductRequest($request, true);
             if (! empty($validation['errors'])) {
@@ -162,13 +113,6 @@ class ProductController extends Controller
     public function destroy($id)
     {
         try {
-            if (! $this->ensureProductsTable()) {
-                return response()->json([
-                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
-                    'code' => 500,
-                ], 500);
-            }
-
             Product::findOrFail($id)->delete();
             return response()->json(['message' => 'Deleted']);
         } catch (Throwable $exception) {
@@ -179,29 +123,17 @@ class ProductController extends Controller
     public function health()
     {
         try {
+            // Verify DB connection is alive
             DB::connection()->getPdo();
 
-            if (! Schema::hasTable('products')) {
-                if ($this->ensureProductsTable()) {
-                    return response()->json([
-                        'status' => 'ok',
-                        'database' => DB::getDatabaseName(),
-                        'table' => 'products created',
-                    ], 200);
-                }
-
-                return response()->json([
-                    'status' => 'error',
-                    'database' => DB::getDatabaseName(),
-                    'table' => 'products not found and could not be created',
-                ], 500);
-            }
+            // Check if products table exists (diagnostic only)
+            $tableExists = Schema::hasTable('products');
 
             return response()->json([
-                'status' => 'ok',
+                'status' => $tableExists ? 'ok' : 'error',
                 'database' => DB::getDatabaseName(),
-                'table' => 'products exists',
-            ], 200);
+                'table' => $tableExists ? 'products exists' : 'products table missing - run migrations',
+            ], $tableExists ? 200 : 503);
         } catch (Throwable $exception) {
             return $this->dbErrorResponse($exception);
         }
