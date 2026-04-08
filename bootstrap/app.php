@@ -68,6 +68,7 @@ $app->singleton(
 
 $app->configure('app');
 $app->configure('auth');
+$app->instance('path.lang', dirname(__DIR__).'/resources/lang');
 
 /*
 |--------------------------------------------------------------------------
