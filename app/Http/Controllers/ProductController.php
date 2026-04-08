@@ -46,13 +46,6 @@ class ProductController extends Controller
     public function index()
     {
         try {
-            if (! $this->ensureProductsTable()) {
-                return response()->json([
-                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
-                    'code' => 500,
-                ], 500);
-            }
-
             return response()->json(Product::all());
         } catch (Throwable $exception) {
             return $this->dbErrorResponse($exception);
@@ -62,13 +55,6 @@ class ProductController extends Controller
     public function show($id)
     {
         try {
-            if (! $this->ensureProductsTable()) {
-                return response()->json([
-                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
-                    'code' => 500,
-                ], 500);
-            }
-
             return response()->json(Product::findOrFail($id));
         } catch (Throwable $exception) {
             return $this->dbErrorResponse($exception);
@@ -118,13 +104,6 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         try {
-            if (! $this->ensureProductsTable()) {
-                return response()->json([
-                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
-                    'code' => 500,
-                ], 500);
-            }
-
             $validation = $this->validateProductRequest($request, false);
             if (! empty($validation['errors'])) {
                 return response()->json(['errors' => $validation['errors']], 422);
@@ -139,13 +118,6 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            if (! $this->ensureProductsTable()) {
-                return response()->json([
-                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
-                    'code' => 500,
-                ], 500);
-            }
-
             $product = Product::findOrFail($id);
             $validation = $this->validateProductRequest($request, true);
             if (! empty($validation['errors'])) {
@@ -162,13 +134,6 @@ class ProductController extends Controller
     public function destroy($id)
     {
         try {
-            if (! $this->ensureProductsTable()) {
-                return response()->json([
-                    'error' => 'Could not create or access products table. Check gateway DB permissions.',
-                    'code' => 500,
-                ], 500);
-            }
-
             Product::findOrFail($id)->delete();
             return response()->json(['message' => 'Deleted']);
         } catch (Throwable $exception) {
