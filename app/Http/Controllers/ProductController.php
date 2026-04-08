@@ -131,7 +131,6 @@ class ProductController extends Controller
 
             return response()->json([
                 'status' => $tableExists ? 'ok' : 'error',
-                'database' => DB::getDatabaseName(),
                 'table' => $tableExists ? 'products exists' : 'products table missing - run migrations',
             ], $tableExists ? 200 : 503);
         } catch (Throwable $exception) {
