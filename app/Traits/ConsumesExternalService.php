@@ -19,6 +19,8 @@ trait ConsumesExternalService
         // create a new client request
         $client = new Client([
             'base_uri' => $this->baseUri,
+            'connect_timeout' => 5,  // 5 second connection timeout
+            'timeout' => 10,         // 10 second request timeout
         ]);
 
         if (isset($this->secret)) {
