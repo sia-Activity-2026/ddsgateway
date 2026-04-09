@@ -19,6 +19,10 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+$router->options('{any:.*}', function () {
+    return response('', 200);
+});
+
 $router->group(['middleware' => 'client.credentials'], function () use ($router) {
 
     // Api gateway routes for site1 users
