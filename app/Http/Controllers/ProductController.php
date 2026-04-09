@@ -167,15 +167,11 @@ class ProductController extends Controller
             }
 
             if (array_key_exists('updated_at', $validation['data'])) {
-                $product->timestamps = false;
+                DB::table('products')->where('id', $id)->update($validation['data']);
+                return response()->json(Product::findOrFail($id));
             }
 
             $product->update($validation['data']);
-
-            if (array_key_exists('updated_at', $validation['data'])) {
-                $product->timestamps = true;
-            }
-
             return response()->json($product);
         } catch (Throwable $exception) {
             return $this->dbErrorResponse($exception);
