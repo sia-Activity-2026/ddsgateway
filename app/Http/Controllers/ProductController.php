@@ -165,7 +165,16 @@ class ProductController extends Controller
                 return response()->json(['errors' => $validation['errors']], 422);
             }
 
+            if (array_key_exists('updated_at', $validation['data'])) {
+                $product->timestamps = false;
+            }
+
             $product->update($validation['data']);
+
+            if (array_key_exists('updated_at', $validation['data'])) {
+                $product->timestamps = true;
+            }
+
             return response()->json($product);
         } catch (Throwable $exception) {
             return $this->dbErrorResponse($exception);
