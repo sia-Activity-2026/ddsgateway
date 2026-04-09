@@ -36,6 +36,7 @@ class ProductController extends Controller
                 $table->decimal('price', 10, 2)->default(0);
                 $table->integer('stock')->default(0);
                 $table->timestamps();
+                $table->string('custom_updated_at')->nullable();
             });
 
             return true;
@@ -78,7 +79,7 @@ class ProductController extends Controller
 
     protected function validateProductRequest(Request $request, bool $isUpdate = false)
     {
-        $data = $request->only(['name', 'description', 'price', 'stock', 'updated_at']);
+        $data = $request->only(['name', 'description', 'price', 'stock', 'updated_at', 'custom_updated_at']);
         $errors = [];
 
         if (! $isUpdate || $request->has('name')) {
@@ -123,6 +124,12 @@ class ProductController extends Controller
                 } catch (Throwable $exception) {
                     $errors['updated_at'][] = 'The updated_at is not a valid date.';
                 }
+            }
+        }
+
+        if ($request->has('custom_updated_at')) {
+            if ($data['custom_updated_at'] !== null && ! is_string($data['custom_updated_at'])) {
+                $errors['custom_updated_at'][] = 'The custom_updated_at must be a string.';
             }
         }
 
