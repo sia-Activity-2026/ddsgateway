@@ -118,7 +118,8 @@ class ProductController extends Controller
                 $errors['updated_at'][] = 'The updated_at must be a string.';
             } else {
                 try {
-                    Carbon::parse($data['updated_at']);
+                    $date = Carbon::parse($data['updated_at']);
+                    $data['updated_at'] = $date->toDateTimeString();
                 } catch (Throwable $exception) {
                     $errors['updated_at'][] = 'The updated_at is not a valid date.';
                 }
