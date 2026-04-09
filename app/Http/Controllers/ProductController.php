@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Throwable;
@@ -77,7 +78,7 @@ class ProductController extends Controller
 
     protected function validateProductRequest(Request $request, bool $isUpdate = false)
     {
-        $data = $request->only(['name', 'description', 'price', 'stock']);
+        $data = $request->only(['name', 'description', 'price', 'stock', 'updated_at']);
         $errors = [];
 
         if (! $isUpdate || $request->has('name')) {
@@ -109,6 +110,18 @@ class ProductController extends Controller
                 $errors['stock'][] = 'The stock field is required.';
             } elseif (filter_var($data['stock'], FILTER_VALIDATE_INT) === false) {
                 $errors['stock'][] = 'The stock must be an integer.';
+            }
+        }
+
+        if ($request->has('updated_at')) {
+            if ($data['updated_at'] !== null && ! is_string($data['updated_at'])) {
+                $errors['updated_at'][] = 'The updated_at must be a string.';
+            } else {
+                try {
+                    Carbon::parse($data['updated_at']);
+                } catch (Throwable $exception) {
+                    $errors['updated_at'][] = 'The updated_at is not a valid date.';
+                }
             }
         }
 
