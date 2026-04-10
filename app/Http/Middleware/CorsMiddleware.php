@@ -33,17 +33,27 @@ class CorsMiddleware
 
         // Set CORS headers if origin is allowed
         if ($isOriginAllowed) {
-            $response->header('Access-Control-Allow-Origin', $origin ?: '*');
-            $response->header('Access-Control-Allow-Methods', implode(',', $config['allowed_methods']));
-            $response->header('Access-Control-Allow-Headers', implode(',', $config['allowed_headers']));
-            $response->header('Access-Control-Max-Age', $config['max_age']);
+            $headers = [
+                'Access-Control-Allow-Origin' => $origin ?: '*',
+                'Access-Control-Allow-Methods' => implode(',', $config['allowed_methods']),
+                'Access-Control-Allow-Headers' => implode(',', $config['allowed_headers']),
+                'Access-Control-Max-Age' => $config['max_age'],
+            ];
 
             if ($config['supports_credentials']) {
-                $response->header('Access-Control-Allow-Credentials', 'true');
+                $headers['Access-Control-Allow-Credentials'] = 'true';
             }
 
             if (!empty($config['expose_headers'])) {
-                $response->header('Access-Control-Expose-Headers', implode(',', $config['expose_headers']));
+                $headers['Access-Control-Expose-Headers'] = implode(',', $config['expose_headers']);
+            }
+
+            foreach ($headers as $name => $value) {
+                if (method_exists($response, 'header')) {
+                    $response->header($name, $value);
+                } else {
+                    $response->headers->set($name, $value);
+                }
             }
         }
 
